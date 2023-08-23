@@ -144,7 +144,7 @@ void DeepSleepComponent::begin_sleep(bool manual) {
   if (this->sleep_duration_.has_value())
     esp_sleep_enable_timer_wakeup(*this->sleep_duration_);
   if (this->wakeup_pin_ != nullptr) {
-    bool level = !this->wakeup_pin_->is_inverted();
+    bool level = this->wakeup_pin_->is_inverted();
     if (this->wakeup_pin_mode_ == WAKEUP_PIN_MODE_INVERT_WAKEUP && this->wakeup_pin_->digital_read()) {
       level = !level;
     }
@@ -167,7 +167,7 @@ void DeepSleepComponent::begin_sleep(bool manual) {
     esp_sleep_enable_timer_wakeup(*this->sleep_duration_);
 #endif
   if (this->wakeup_pin_ != nullptr) {
-    bool level = !this->wakeup_pin_->is_inverted();
+    bool level = this->wakeup_pin_->is_inverted();
     if (this->wakeup_pin_mode_ == WAKEUP_PIN_MODE_INVERT_WAKEUP && this->wakeup_pin_->digital_read()) {
       level = !level;
     }
@@ -183,7 +183,7 @@ void DeepSleepComponent::begin_sleep(bool manual) {
   if (wakeup_pins_.size() > 0) {
     bool level;
     for (WakeUpPinItem item : this->wakeup_pins_) {
-      level = !item.wakeup_pin->is_inverted();
+      level = item.wakeup_pin->is_inverted();
       if (item.wakeup_pin_mode == WAKEUP_PIN_MODE_INVERT_WAKEUP && item.wakeup_pin->digital_read()) {
         level = !level;
       }
