@@ -14,7 +14,7 @@ extern "C" {
 
 namespace esphome::ota {
 
-static const char *const TAG = "ota.bl60x";
+ESPHOME_LOG_TAG(TAG, "ota.bl60x");
 static constexpr size_t PACKAGE_HEADER_SIZE = 512;
 static constexpr size_t BOOTINFO_SIZE = 4096;
 static constexpr size_t INTERNAL_SHA_SIZE = 32;
