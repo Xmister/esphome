@@ -593,7 +593,12 @@ async def component_to_code(config):
     # if platform version is a valid version constraint, prefix the default package
     framework = config[CONF_FRAMEWORK]
     cv.platformio_version_constraint(framework[CONF_VERSION])
-    if framework[CONF_SOURCE]:
+    if config[CONF_FAMILY] == "BL60X" and not framework[CONF_SOURCE]:
+        # BL60X boards are not present in the upstream platform release yet.
+        cg.add_platformio_option(
+            "platform", "https://github.com/Xmister/libretuya.git#bl602-integration"
+        )
+    elif framework[CONF_SOURCE]:
         cg.add_platformio_option("platform", framework[CONF_SOURCE])
     elif str(framework[CONF_VERSION]) != "0.0.0":
         cg.add_platformio_option("platform", f"libretiny @ {framework[CONF_VERSION]}")

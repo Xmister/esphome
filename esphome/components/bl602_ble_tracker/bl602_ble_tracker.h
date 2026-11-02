@@ -5,7 +5,7 @@
 
 #pragma once
 
-#ifdef USE_LIBRETINY
+#ifdef USE_BL602_BLE
 
 #include "esphome/components/ble_device_base/ble_device.h"
 #include "esphome/components/ble_device_base/ble_hub.h"

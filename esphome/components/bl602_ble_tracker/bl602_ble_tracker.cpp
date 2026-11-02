@@ -1,4 +1,4 @@
-#ifdef USE_LIBRETINY
+#ifdef USE_BL602_BLE
 #include "bl602_ble_tracker.h"
 #include "esphome/core/hal.h"
 #include "esphome/core/log.h"
