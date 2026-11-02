@@ -10,7 +10,7 @@ extern "C" {
 int lt_bl602_wifi_manager_ready_for_ble(void) __attribute__((weak));
 }
 namespace esphome::bl602_ble {
-static const char *const TAG = "bl602_ble";
+ESPHOME_LOG_TAG(TAG, "bl602_ble");
 
 static constexpr uint32_t BLE_INIT_STACK_WORDS = 2048;
 static constexpr UBaseType_t BLE_INIT_TASK_PRIORITY = tskIDLE_PRIORITY + 2;
