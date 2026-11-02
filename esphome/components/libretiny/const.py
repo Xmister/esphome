@@ -38,6 +38,7 @@ LT_DEBUG_MODULES = [
     "OTA",
     "FDB",
     "MDNS",
+    "BLE",
     "LWIP",
     "LWIP_ASSERT",
 ]

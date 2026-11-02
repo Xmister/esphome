@@ -83,7 +83,7 @@ void BL602BLE::loop() {
     bl602_ble_queue_stats_t queue{};
     (void) bl602_ble_get_scan_stats(&controller);
     bl602_ble_queue_get_stats(&queue);
-    ESP_LOGI(TAG, "scan stats controller=%u queue_cb=%u queued=%u dropped=%u polled=%u tracker=%u",
+    ESP_LOGD(TAG, "scan stats controller=%u queue_cb=%u queued=%u dropped=%u polled=%u tracker=%u",
              static_cast<unsigned>(controller.controller_reports), static_cast<unsigned>(queue.callback_reports),
              static_cast<unsigned>(queue.queued_reports), static_cast<unsigned>(queue.dropped_reports),
              static_cast<unsigned>(queue.polled_reports), static_cast<unsigned>(this->tracker_reports_));
