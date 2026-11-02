@@ -4,6 +4,8 @@ import esphome.config_validation as cv
 from esphome.const import CONF_ID
 
 DEPENDENCIES = ["bl60x"]
+DOMAIN = "bl602_ble"
+
 bl602_ble_ns = cg.esphome_ns.namespace("bl602_ble")
 BL602BLE = bl602_ble_ns.class_("BL602BLE", cg.Component)
 CONFIG_SCHEMA = cv.Schema({cv.GenerateID(): cv.declare_id(BL602BLE)}).extend(cv.COMPONENT_SCHEMA)
