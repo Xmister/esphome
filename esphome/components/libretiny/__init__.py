@@ -34,6 +34,7 @@ from esphome.storage_json import StorageJSON
 from . import gpio  # noqa: F401
 from .const import (
     COMPONENT_BK72XX,
+    COMPONENT_BL60X,
     COMPONENT_LN882X,
     CONF_GPIO_RECOVER,
     CONF_LOGLEVEL,
@@ -264,6 +265,16 @@ def _check_framework_version(value):
             )
 
         version, source = ARDUINO_VERSIONS[value[CONF_VERSION]]
+        component = CORE.data.get(KEY_LIBRETINY, {}).get(KEY_COMPONENT_DATA)
+        if component is not None and component.name == COMPONENT_BL60X:
+            # BL60X is not in the upstream release yet. Pin stable aliases to
+            # the matching platform; keep dev on its integration branch.
+            revision = (
+                "bl602-integration"
+                if value[CONF_VERSION] == "dev"
+                else "fef103c5db5ae29c9222b23f7999a798dfa25433"
+            )
+            source = f"https://github.com/Xmister/libretuya.git#{revision}"
     else:
         version = cv.Version.parse(cv.version_number(value[CONF_VERSION]))
         source = value.get(CONF_SOURCE, None)
@@ -593,12 +604,7 @@ async def component_to_code(config):
     # if platform version is a valid version constraint, prefix the default package
     framework = config[CONF_FRAMEWORK]
     cv.platformio_version_constraint(framework[CONF_VERSION])
-    if config[CONF_FAMILY] == "BL60X" and not framework[CONF_SOURCE]:
-        # BL60X boards are not present in the upstream platform release yet.
-        cg.add_platformio_option(
-            "platform", "https://github.com/Xmister/libretuya.git#bl602-integration"
-        )
-    elif framework[CONF_SOURCE]:
+    if framework[CONF_SOURCE]:
         cg.add_platformio_option("platform", framework[CONF_SOURCE])
     elif str(framework[CONF_VERSION]) != "0.0.0":
         cg.add_platformio_option("platform", f"libretiny @ {framework[CONF_VERSION]}")

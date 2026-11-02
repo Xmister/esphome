@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "esphome/core/defines.h"
+
 #ifdef USE_BL602_BLE
 
 #include "esphome/components/ble_device_base/ble_device.h"
@@ -141,4 +143,4 @@ class BL602BLETracker : public Component,
 
 }  // namespace esphome::bl602_ble_tracker
 
-#endif  // USE_LIBRETINY
+#endif  // USE_BL602_BLE

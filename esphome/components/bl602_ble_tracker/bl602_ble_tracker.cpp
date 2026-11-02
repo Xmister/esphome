@@ -1,3 +1,5 @@
+#include "esphome/core/defines.h"
+
 #ifdef USE_BL602_BLE
 #include "bl602_ble_tracker.h"
 #include "esphome/core/hal.h"

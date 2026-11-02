@@ -3,7 +3,9 @@
 
 #pragma once
 
-#ifdef USE_LIBRETINY
+#include "esphome/core/defines.h"
+
+#ifdef USE_BL602_BLE
 
 #include "bl602_ble_tracker.h"
 
@@ -39,4 +41,4 @@ template<typename... Ts> class StartScanAction final : public Action<Ts...>, pub
 
 }  // namespace esphome::bl602_ble_tracker
 
-#endif  // USE_LIBRETINY
+#endif  // USE_BL602_BLE
