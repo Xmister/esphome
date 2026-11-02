@@ -71,7 +71,7 @@ CRASH_SAMPLES: dict[str, dict[str, list[str]]] = {
     },
     PLATFORM_BL60X: {
         "state_markers": ["CRASH DETECTED ON PREVIOUS BOOT"],
-        "addresses": ["PC:  0x00012134  RA: 0x00014567"],
+        "addresses": ["PC:  0x00012134 (fault location)"],
     },
     PLATFORM_RTL87XX: {
         "state_markers": ["CRASH DETECTED ON PREVIOUS BOOT"],

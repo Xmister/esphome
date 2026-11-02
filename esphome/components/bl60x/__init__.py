@@ -20,6 +20,7 @@ Platform-specific code should be added to the main libretiny component
 """
 
 from esphome import pins
+import esphome.config_validation as cv
 from esphome.components import libretiny
 from esphome.components.libretiny.const import (
     COMPONENT_BL60X,
@@ -28,6 +29,7 @@ from esphome.components.libretiny.const import (
     LibreTinyComponent,
 )
 from esphome.core import CORE
+from esphome.const import CONF_MODE, CONF_OPEN_DRAIN
 from esphome.cpp_generator import MockObj
 from esphome.stacktrace import process_crash_handler_line as process_stacktrace  # noqa: F401
 from esphome.types import ConfigType
@@ -39,12 +41,23 @@ AUTO_LOAD = ["libretiny"]
 DOMAIN = "bl60x"
 IS_TARGET_PLATFORM = True
 
+
+def _validate_gpio_usage(config: ConfigType) -> ConfigType:
+    """Reject open-drain output until the BL602 GPIO driver supports it."""
+    if config[CONF_MODE][CONF_OPEN_DRAIN]:
+        raise cv.Invalid(
+            "BL602 does not support open-drain GPIO outputs",
+            [CONF_MODE, CONF_OPEN_DRAIN],
+        )
+    return config
+
+
 COMPONENT_DATA = LibreTinyComponent(
     name=COMPONENT_BL60X,
     boards=BL60X_BOARDS,
     board_pins=BL60X_BOARD_PINS,
     pin_validation=None,
-    usage_validation=None,
+    usage_validation=_validate_gpio_usage,
     supports_atomics=False,
 )
 
