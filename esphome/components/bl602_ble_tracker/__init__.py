@@ -4,7 +4,7 @@ an explicit start_scan() call."""
 
 from esphome import automation
 import esphome.codegen as cg
-from esphome.components import ble_device_base, bl602_ble, ota
+from esphome.components import bl602_ble, ble_device_base, ota
 from esphome.components.ble_device_base import automation as ble_automation
 from esphome.components.const import CONF_ON_SCAN_END, CONF_SCAN_PARAMETERS, CONF_WINDOW
 import esphome.config_validation as cv
@@ -27,7 +27,7 @@ CONF_BL602_BLE_ID = "bl602_ble_id"
 
 DEPENDENCIES = ["bl60x"]
 AUTO_LOAD = ["ble_device_base", "bl602_ble"]
-CODEOWNERS = ["@Bl00d-B0b"]
+CODEOWNERS = ["@Xmister"]
 DOMAIN = "bl602_ble_tracker"
 
 ble_device_base.register_hub_provider("bl602_ble_tracker")
@@ -119,7 +119,7 @@ automation.register_apply_action(
 async def to_code(config: ConfigType) -> None:
     # Selects the BLEHub alias arm in ble_device_base/ble_hub_impl.h.
     cg.add_define("USE_BL602_BLE_TRACKER")
-    # Compiles the shared adv + scan-response merge (the LN controller
+    # Compiles the shared adv + scan-response merge (the BL602 controller
     # delivers the pair as separate reports).
     cg.add_define("USE_BLE_SCAN_RESPONSE_MERGER")
 

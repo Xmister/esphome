@@ -56,7 +56,11 @@ static constexpr size_t UUID_STR_LEN = 37;
 // Compatibility for existing ESP32 listener lambdas that inspect get_uuid().
 struct LegacyUUID {
   uint16_t len;
-  union { uint16_t uuid16; uint32_t uuid32; uint8_t uuid128[16]; } uuid;
+  union {
+    uint16_t uuid16;
+    uint32_t uuid32;
+    uint8_t uuid128[16];
+  } uuid;
 };
 #endif
 
@@ -302,11 +306,13 @@ class ESPBTDeviceListener {
 }  // namespace esphome::ble_device_base
 
 #if defined(USE_BL602_BLE) && !defined(USE_ESP32)
-namespace esphome::esp32_ble { using ble_device_base::ESPBTUUID; }
+namespace esphome::esp32_ble {
+using ble_device_base::ESPBTUUID;
+}
 namespace esphome::esp32_ble_tracker {
 using ble_device_base::ESPBTDevice;
 using ble_device_base::ESPBTUUID;
 using ble_device_base::ESPBLEiBeacon;
 using ble_device_base::ServiceData;
-}
+}  // namespace esphome::esp32_ble_tracker
 #endif

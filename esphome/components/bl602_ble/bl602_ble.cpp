@@ -1,6 +1,7 @@
 #include "bl602_ble.h"
 #ifdef USE_BL602_BLE
 #include "esphome/core/log.h"
+#include "esphome/core/application.h"
 #include <FreeRTOS.h>
 #include <task.h>
 #include <cstring>
@@ -19,7 +20,11 @@ static StackType_t ble_init_stack[BLE_INIT_STACK_WORDS];
 
 void BL602BLE::setup() {
   const int error = bl602_ble_queue_init();
-  if (error) { ESP_LOGE(TAG, "BLE event queue init failed: %d", error); this->mark_failed(); return; }
+  if (error) {
+    ESP_LOGE(TAG, "BLE event queue init failed: %d", error);
+    this->mark_failed();
+    return;
+  }
 }
 
 void BL602BLE::initialization_task_(void *param) {
@@ -33,24 +38,38 @@ void BL602BLE::initialization_task_(void *param) {
 }
 
 void BL602BLE::get_mac_lsb_first(uint8_t out[6]) const {
-  if (bl602_ble_get_address(out) != 0) memset(out, 0, 6);
+  if (bl602_ble_get_address(out) != 0)
+    memset(out, 0, 6);
 }
 bool BL602BLE::scan_start(uint16_t interval, uint16_t window, bool active) {
-  if (!this->ready_ || this->starting_ || this->scanning_) return false;
+  if (!this->ready_ || this->starting_ || this->scanning_)
+    return false;
   const bl602_scan_config config{interval, window, static_cast<uint8_t>(active)};
   this->starting_ = true;
   bl602_ble_queue_begin_scan();
   const int error = bl602_scan_start_configured(&config, bl602_ble_queue_advertisement, bl602_ble_queue_ready);
-  if (error) { bl602_ble_queue_end_scan(); this->starting_ = false; ESP_LOGE(TAG, "BLE scan start failed: %d", error); return false; }
+  if (error) {
+    bl602_ble_queue_end_scan();
+    this->starting_ = false;
+    ESP_LOGE(TAG, "BLE scan start failed: %d", error);
+    return false;
+  }
   this->starting_ = false;
   this->scanning_ = true;
   return true;
 }
 bool BL602BLE::scan_stop() {
-  if (this->starting_) { bl602_ble_queue_end_scan(); this->stop_pending_ = true; return true; }
-  if (!this->scanning_) return true;
+  if (this->starting_) {
+    bl602_ble_queue_end_scan();
+    return true;
+  }
+  if (!this->scanning_)
+    return true;
   int error = bl602_scan_stop();
-  if (error) { ESP_LOGE(TAG, "BLE scan stop failed: %d", error); return false; }
+  if (error) {
+    ESP_LOGE(TAG, "BLE scan stop failed: %d", error);
+    return false;
+  }
   bl602_ble_queue_end_scan();
   this->scanning_ = false;
   return true;
@@ -59,24 +78,31 @@ void BL602BLE::loop() {
   bl602_ble_event event;
   for (unsigned i = 0; i < BL602_BLE_QUEUE_LENGTH + 1 && bl602_ble_queue_poll(&event) == 1; i++) {
     if (event.type == BL602_BLE_EVENT_READY) {
-      if (event.status) { ESP_LOGE(TAG, "BLE stack initialization failed: %d", event.status); this->mark_failed(); }
-      else this->ready_ = true;
+      if (event.status) {
+        ESP_LOGE(TAG, "BLE stack initialization failed: %d", event.status);
+        this->mark_failed();
+      } else
+        this->ready_ = true;
       continue;
     }
-    if (!this->scanning_) continue;
+    if (!this->scanning_)
+      continue;
 #ifdef BL602_BLE_SCAN_LISTENER_COUNT
     this->tracker_reports_++;
     BLEScanReport report{};
     memcpy(report.mac, event.address, sizeof(report.mac));
-    report.rssi = event.rssi; report.addr_type = event.address_type;
+    report.rssi = event.rssi;
+    report.addr_type = event.address_type;
     report.is_scan_response = event.event_type == 4;
     report.scannable = event.event_type == 0 || event.event_type == 2;
-    report.data_len = event.data_len; memcpy(report.data, event.data, event.data_len);
-    for (auto *listener : this->listeners_) listener->on_scan_report(report);
+    report.data_len = event.data_len;
+    memcpy(report.data, event.data, event.data_len);
+    for (auto *listener : this->listeners_)
+      listener->on_scan_report(report);
 #endif
   }
 
-  const uint32_t now = millis();
+  const uint32_t now = App.get_loop_component_start_time();
   if (this->scanning_ && now - this->diagnostic_log_at_ >= 5000) {
     this->diagnostic_log_at_ = now;
     bl602_ble_scan_stats_t controller{};

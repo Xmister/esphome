@@ -1,23 +1,26 @@
 import hashlib
+from pathlib import Path
 import struct
 import zlib
-from pathlib import Path
 
 import pytest
 
-import esphome.config_validation as cv
 from esphome.components.bl60x.ota_image import (
-    BOOTINFO_SIZE,
     BOOT_HEADER_SIZE,
+    BOOTINFO_SIZE,
     OTA_HEADER_SIZE,
     _make_image,
     _raw_application,
 )
+import esphome.config_validation as cv
 
 
 def _sdk_image(app: bytes) -> bytes:
     header = bytearray(
-        (Path(__file__).parents[3] / "esphome/components/bl60x/minir3_boot_header.bin").read_bytes()
+        (
+            Path(__file__).parents[3]
+            / "esphome/components/bl60x/minir3_boot_header.bin"
+        ).read_bytes()
     )
     app = app + b"\xff" * ((-len(app)) % 16)
     struct.pack_into("<I", header, 120, len(app))
@@ -38,7 +41,9 @@ def test_ota_image_extracts_and_rewraps_sdk_single_image() -> None:
     payload_size = struct.unpack_from("<I", wrapped, 20)[0]
     payload = wrapped[OTA_HEADER_SIZE : OTA_HEADER_SIZE + payload_size]
     assert payload[:4] == b"BFNP"
-    assert struct.unpack_from("<I", payload, 120)[0] == len(app + b"\xff" * ((-len(app)) % 16))
+    assert struct.unpack_from("<I", payload, 120)[0] == len(
+        app + b"\xff" * ((-len(app)) % 16)
+    )
     assert payload[BOOTINFO_SIZE:] == app + b"\xff" * ((-len(app)) % 16)
     assert hashlib.sha256(payload[BOOTINFO_SIZE:]).digest() == payload[132:164]
 

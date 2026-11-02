@@ -223,6 +223,9 @@ def write_component_code(
         if VAR_GPIO_PIN in gpio_code:
             values["PIN_VALIDATION"] = VAR_GPIO_PIN
             imports["gpio"].add(VAR_GPIO_PIN)
+        if VAR_GPIO_USAGE in gpio_code:
+            values["USAGE_VALIDATION"] = VAR_GPIO_USAGE
+            imports["gpio"].add(VAR_GPIO_USAGE)
 
     # parse schema.py file to find schema extension
     if schema_py.is_file():

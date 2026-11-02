@@ -29,11 +29,11 @@ namespace esphome::bl602_ble_tracker {
 // ---------------------------------------------------------------------------
 
 class BL602BLETracker : public Component,
-                         public Parented<bl602_ble::BL602BLE>,
-                         public bl602_ble::BLEScanListener
+                        public Parented<bl602_ble::BL602BLE>,
+                        public bl602_ble::BLEScanListener
 #ifdef USE_OTA_STATE_LISTENER
     ,
-                         public ota::OTAGlobalStateListener
+                        public ota::OTAGlobalStateListener
 #endif
 {
  public:
@@ -107,15 +107,10 @@ class BL602BLETracker : public Component,
   void on_scan_report(const bl602_ble::BLEScanReport &report) override;
 
  protected:
-
-  // Close a scan period: flush held advertisements (unmerged) BEFORE
-  // on_scan_end fires, then re-anchor the period clock to `now`.
-  void end_scan_period_(uint32_t now);
-
   bool scan_running_{false};
   bool scan_active_{false};
   // Defaults are the BL602 SDK's recommended scan parameters
-  // (ln_ble_scan.h: SCAN_INTERVAL_DEF 0xA0, SCAN_WINDOW_DEF 0x50 → 50 % duty).
+  // (100 ms interval and 50 ms window).
   // uint16_t matches the controller's scan_start() parameters.
   uint16_t scan_interval_{160};  // 160 × 0.625 ms = 100 ms (SDK SCAN_INTERVAL_DEF)
   uint16_t scan_window_{80};     // 80 × 0.625 ms = 50 ms (SDK SCAN_WINDOW_DEF; 50/100 = 50 %)
@@ -123,14 +118,10 @@ class BL602BLETracker : public Component,
   bool scan_continuous_{true};
   bool wanted_{false};
   uint32_t retry_at_{0};
-  bool pending_start_{false};              // start_scan() latched before the controller's setup()
   bool scan_continuous_configured_{true};  // YAML value; stop_scan() must not lose it
 #ifdef USE_OTA_STATE_LISTENER
-  bool scan_continuous_before_ota_{false};  // continuous mode saved at OTA start, restored on OTA failure
-  bool scan_running_before_ota_{false};
-  bool wanted_before_ota_{false};     // one-shot scan running at OTA start, restarted on OTA failure
+  bool wanted_before_ota_{false};  // one-shot scan running at OTA start, restarted on OTA failure
 #endif
-  uint32_t scan_start_time_{0};
 
   // Shared adv + scan-response merge and frame dispatch (ble_device_base).
   // All calls run on the main task (the controller queue already crossed

@@ -168,7 +168,7 @@ def _uart_selection_libretiny() -> dict[str, list[str]]:
 
     return {
         COMPONENT_BK72XX: [DEFAULT, UART1, UART2],
-        COMPONENT_BL60X: [DEFAULT, UART0, UART1],
+        COMPONENT_BL60X: [DEFAULT, UART0],
         COMPONENT_LN882X: [DEFAULT, UART0, UART1, UART2],
         COMPONENT_RTL87XX: [DEFAULT, UART0, UART1, UART2],
     }

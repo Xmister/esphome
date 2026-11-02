@@ -8,7 +8,6 @@ import zlib
 import esphome.config_validation as cv
 from esphome.core import CORE
 
-
 MINIR3_BOARD = "sonoff-minir3"
 MINIR3_INACTIVE_SLOT_SIZE = 0xB4000
 BOOTINFO_SIZE = 0x1000

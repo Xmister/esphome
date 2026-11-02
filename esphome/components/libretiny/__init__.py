@@ -34,7 +34,6 @@ from esphome.storage_json import StorageJSON
 from . import gpio  # noqa: F401
 from .const import (
     COMPONENT_BK72XX,
-    COMPONENT_BL60X,
     COMPONENT_LN882X,
     CONF_GPIO_RECOVER,
     CONF_LOGLEVEL,
@@ -143,6 +142,17 @@ def _detect_variant(value):
 
 
 def _update_core_data(config):
+    framework = config[CONF_FRAMEWORK]
+    alias = framework.pop("_version_alias", None)
+    if config[CONF_COMPONENT_ID] == "bl60x" and alias is not None:
+        # Resolve after board detection so validation does not depend on the
+        # platform left in CORE by a previously validated configuration.
+        revision = (
+            "bl602-integration"
+            if alias == "dev"
+            else "c8e12059b9f97948f33b18c9415d9eb7438cb331"
+        )
+        framework[CONF_SOURCE] = f"https://github.com/Xmister/libretuya.git#{revision}"
     CORE.data[KEY_CORE][KEY_TARGET_PLATFORM] = config[CONF_COMPONENT_ID]
     CORE.data[KEY_CORE][KEY_TARGET_FRAMEWORK] = "arduino"
     CORE.data[KEY_CORE][KEY_FRAMEWORK_VERSION] = cv.Version.parse(
@@ -265,16 +275,7 @@ def _check_framework_version(value):
             )
 
         version, source = ARDUINO_VERSIONS[value[CONF_VERSION]]
-        component = CORE.data.get(KEY_LIBRETINY, {}).get(KEY_COMPONENT_DATA)
-        if component is not None and component.name == COMPONENT_BL60X:
-            # BL60X is not in the upstream release yet. Pin stable aliases to
-            # the matching platform; keep dev on its integration branch.
-            revision = (
-                "bl602-integration"
-                if value[CONF_VERSION] == "dev"
-                else "fef103c5db5ae29c9222b23f7999a798dfa25433"
-            )
-            source = f"https://github.com/Xmister/libretuya.git#{revision}"
+        value["_version_alias"] = value[CONF_VERSION]
     else:
         version = cv.Version.parse(cv.version_number(value[CONF_VERSION]))
         source = value.get(CONF_SOURCE, None)
@@ -693,8 +694,10 @@ def device_ota_image(firmware: Path) -> Path:
     when there is nothing to drop."""
     from .ota_uf2 import device_ota_uf2
 
-    if CORE.target_platform == PLATFORM_BL60X:
-        from esphome.components.bl60x.ota_image import device_ota_image as bl60x_ota_image
+    if CORE.data.get(KEY_CORE, {}).get(KEY_TARGET_PLATFORM) == PLATFORM_BL60X:
+        from esphome.components.bl60x.ota_image import (
+            device_ota_image as bl60x_ota_image,
+        )
 
         return bl60x_ota_image(firmware)
 

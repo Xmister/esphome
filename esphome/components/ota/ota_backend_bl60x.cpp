@@ -23,8 +23,8 @@ static constexpr uint8_t OTA_MAGIC[] = "BL60X_OTA_Ver1.0";
 static constexpr uint8_t BFNP_MAGIC[] = "BFNP";
 
 static uint32_t read_le32(const uint8_t *p) {
-  return static_cast<uint32_t>(p[0]) | (static_cast<uint32_t>(p[1]) << 8) |
-         (static_cast<uint32_t>(p[2]) << 16) | (static_cast<uint32_t>(p[3]) << 24);
+  return static_cast<uint32_t>(p[0]) | (static_cast<uint32_t>(p[1]) << 8) | (static_cast<uint32_t>(p[2]) << 16) |
+         (static_cast<uint32_t>(p[3]) << 24);
 }
 
 static uint32_t crc32(const uint8_t *data, size_t len) {
@@ -77,11 +77,10 @@ bool BL60XOTABackend::process_package_header_() {
   }
   this->payload_size_ = read_le32(h + 20);
   if (read_le32(h + 96) != this->payload_size_ ||
-      this->expected_image_size_ != PACKAGE_HEADER_SIZE + this->payload_size_ ||
-      this->payload_size_ < BOOTINFO_SIZE ||
+      this->expected_image_size_ != PACKAGE_HEADER_SIZE + this->payload_size_ || this->payload_size_ < BOOTINFO_SIZE ||
       this->payload_size_ + INTERNAL_SHA_SIZE > MINIR3_INACTIVE_SLOT_SIZE) {
-    ESP_LOGE(TAG, "Invalid OTA lengths: image=%u payload=%u",
-             (unsigned) this->expected_image_size_, (unsigned) this->payload_size_);
+    ESP_LOGE(TAG, "Invalid OTA lengths: image=%u payload=%u", (unsigned) this->expected_image_size_,
+             (unsigned) this->payload_size_);
     return false;
   }
   if (memcmp(h + 32, "MINIR3", 6) != 0) {
@@ -95,15 +94,14 @@ bool BL60XOTABackend::process_package_header_() {
 
 bool BL60XOTABackend::process_bootinfo_() {
   const auto *b = this->block_;
-  if (memcmp(b, BFNP_MAGIC, sizeof(BFNP_MAGIC) - 1) != 0 ||
-      crc32(b, 172) != read_le32(b + 172) || (b[116] & 0x0F) != 0) {
+  if (memcmp(b, BFNP_MAGIC, sizeof(BFNP_MAGIC) - 1) != 0 || crc32(b, 172) != read_le32(b + 172) ||
+      (b[116] & 0x0F) != 0) {
     ESP_LOGE(TAG, "Invalid BL602 bootinfo header");
     return false;
   }
   this->app_size_ = read_le32(b + 120);
   if (this->app_size_ == 0 || this->app_size_ != this->payload_size_ - BOOTINFO_SIZE) {
-    ESP_LOGE(TAG, "Invalid app size: header=%u payload=%u", (unsigned) this->app_size_,
-             (unsigned) this->payload_size_);
+    ESP_LOGE(TAG, "Invalid app size: header=%u payload=%u", (unsigned) this->app_size_, (unsigned) this->payload_size_);
     return false;
   }
   memcpy(this->expected_app_sha_, b + 132, sizeof(this->expected_app_sha_));
@@ -192,8 +190,8 @@ OTAResponseTypes BL60XOTABackend::write(uint8_t *data, size_t len) {
 OTAResponseTypes BL60XOTABackend::end() {
   if (this->received_ != this->expected_image_size_ || !this->package_header_valid_ ||
       this->payload_received_ + this->block_received_ != this->payload_size_) {
-    ESP_LOGE(TAG, "Incomplete image: received=%u/%u payload=%u+%u/%u",
-             (unsigned) this->received_, (unsigned) this->expected_image_size_, (unsigned) this->payload_received_,
+    ESP_LOGE(TAG, "Incomplete image: received=%u/%u payload=%u+%u/%u", (unsigned) this->received_,
+             (unsigned) this->expected_image_size_, (unsigned) this->payload_received_,
              (unsigned) this->block_received_, (unsigned) this->payload_size_);
     return OTA_RESPONSE_ERROR_UPDATE_END;
   }
@@ -218,7 +216,7 @@ OTAResponseTypes BL60XOTABackend::end() {
     return OTA_RESPONSE_ERROR_UPDATE_END;
   }
   const int trailer_result = hosal_ota_update(this->payload_size_ + INTERNAL_SHA_SIZE, this->payload_size_,
-                                               this->sdk_sha_digest_, INTERNAL_SHA_SIZE);
+                                              this->sdk_sha_digest_, INTERNAL_SHA_SIZE);
   if (trailer_result != 0) {
     ESP_LOGE(TAG, "SDK SHA trailer write failed: %d", trailer_result);
     return OTA_RESPONSE_ERROR_UPDATE_END;

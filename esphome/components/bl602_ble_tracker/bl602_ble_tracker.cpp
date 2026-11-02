@@ -4,6 +4,7 @@
 #include "bl602_ble_tracker.h"
 #include "esphome/core/hal.h"
 #include "esphome/core/log.h"
+#include "esphome/core/application.h"
 
 namespace esphome::bl602_ble_tracker {
 ESPHOME_LOG_TAG(TAG, "bl602_ble_tracker");
@@ -31,12 +32,14 @@ void BL602BLETracker::on_ota_global_state(ota::OTAState state, float, uint8_t, o
 }
 #endif
 void BL602BLETracker::loop() {
-  const uint32_t now = millis();
-  if (!this->merger_.empty()) this->merger_.sweep(now);
-  if (!this->wanted_) return;
+  const uint32_t now = App.get_loop_component_start_time();
+  if (!this->merger_.empty())
+    this->merger_.sweep(now);
+  if (!this->wanted_)
+    return;
   if (this->parent_->is_scanning() && !this->scan_running_) {
     this->scan_running_ = true;
-    this->scan_start_time_ = this->scan_period_start_ = now;
+    this->scan_period_start_ = now;
   }
   if (!this->parent_->is_scanning()) {
     this->scan_running_ = false;
@@ -47,13 +50,19 @@ void BL602BLETracker::loop() {
     }
     return;
   }
-  if (now - this->scan_period_start_ < this->scan_duration_) return;
+  if (now - this->scan_period_start_ < this->scan_duration_)
+    return;
   this->merger_.flush();
   this->dispatcher_.on_scan_end();
   this->scan_period_start_ = now;
-  if (!this->scan_continuous_) this->stop_scan();
+  if (!this->scan_continuous_)
+    this->stop_scan();
 }
-void BL602BLETracker::start_scan() { this->wanted_ = true; this->retry_at_ = 0; this->enable_loop(); }
+void BL602BLETracker::start_scan() {
+  this->wanted_ = true;
+  this->retry_at_ = 0;
+  this->enable_loop();
+}
 void BL602BLETracker::stop_scan() {
   this->wanted_ = false;
   this->scan_continuous_ = false;
@@ -70,7 +79,8 @@ bool BL602BLETracker::request_scan_mode(bool active) {
 }
 
 void BL602BLETracker::on_scan_report(const bl602_ble::BLEScanReport &report) {
-  if (!this->wanted_) return;
+  if (!this->wanted_)
+    return;
   if (report.is_scan_response) {
     this->merger_.submit_scan_rsp(report.mac, report.rssi, report.addr_type, report.data, report.data_len);
   } else if (this->scan_active_ && report.scannable) {

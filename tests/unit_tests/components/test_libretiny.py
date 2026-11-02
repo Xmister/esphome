@@ -2,7 +2,7 @@
 
 import pytest
 
-from esphome.components import bk72xx, ln882x, rtl87xx
+from esphome.components import bk72xx, bl60x, ln882x, rtl87xx
 from esphome.components.libretiny import BASE_SCHEMA, _detect_variant
 from esphome.components.libretiny.const import (
     FAMILY_LN882H,
@@ -61,9 +61,9 @@ def test_platform_schemas_are_isolated_instances() -> None:
     made either platform's validation run both extras, so the wrong platform's
     component data won and known boards failed to resolve.
     """
-    platforms = (bk72xx, ln882x, rtl87xx)
+    platforms = (bk72xx, bl60x, ln882x, rtl87xx)
     schemas = [platform.CONFIG_SCHEMA for platform in platforms]
-    assert len({id(schema) for schema in (BASE_SCHEMA, *schemas)}) == 4
+    assert len({id(schema) for schema in (BASE_SCHEMA, *schemas)}) == len(platforms) + 1
     # The shared base must not have accumulated any platform's extra.
     # prepend_extra wraps validators in _Schema, so unwrap before comparing.
     base_extras = [extra.schema for extra in BASE_SCHEMA._extra_schemas]
@@ -78,9 +78,13 @@ def test_each_platform_resolves_its_own_boards() -> None:
     with "This board is unknown"."""
     CORE.data[KEY_CORE] = {}  # written by the schema's _update_core_data extra
     for platform, board in (
+        (bl60x, "generic-bl602"),
         (ln882x, "generic-ln882h"),
         (bk72xx, "generic-bk7252"),
         (rtl87xx, "generic-rtl8720cf-2mb-896k"),
+        (bl60x, "sonoff-minir3"),
     ):
-        platform.CONFIG_SCHEMA({CONF_BOARD: board})
+        config = platform.CONFIG_SCHEMA({CONF_BOARD: board})
         assert CORE.data[KEY_LIBRETINY][KEY_COMPONENT_DATA] is platform.COMPONENT_DATA
+        source = config["framework"]["source"]
+        assert ("Xmister/libretuya.git" in source) == (platform is bl60x)

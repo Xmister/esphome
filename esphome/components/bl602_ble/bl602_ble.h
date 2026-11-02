@@ -18,6 +18,7 @@ struct BLEScanReport {
 class BLEScanListener {
  public:
   virtual void on_scan_report(const BLEScanReport &report) = 0;
+
  protected:
   ~BLEScanListener() = default;
 };
@@ -36,6 +37,7 @@ class BL602BLE final : public Component {
 #endif
   bool scan_start(uint16_t interval, uint16_t window, bool active);
   bool scan_stop();
+
  protected:
 #ifdef BL602_BLE_SCAN_LISTENER_COUNT
   StaticVector<BLEScanListener *, BL602_BLE_SCAN_LISTENER_COUNT> listeners_;
@@ -43,7 +45,6 @@ class BL602BLE final : public Component {
   bool ready_{false};
   bool scanning_{false};
   bool starting_{false};
-  bool stop_pending_{false};
   uint32_t diagnostic_log_at_{0};
   uint32_t tracker_reports_{0};
   bool initialization_started_{false};
