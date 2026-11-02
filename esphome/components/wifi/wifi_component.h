@@ -549,6 +549,8 @@ class WiFiComponent final : public Component {
   void save_wifi_sta(const std::string &ssid, const std::string &password);
   void save_wifi_sta(const char *ssid, const char *password);
   void save_wifi_sta(StringRef ssid, StringRef password) { this->save_wifi_sta(ssid.c_str(), password.c_str()); }
+  // A runtime WiFi reconfiguration must not reload the old profile when it re-enables WiFi.
+  void skip_saved_wifi_settings_once() { this->skip_saved_wifi_settings_once_ = true; }
 
   // ========== INTERNAL METHODS ==========
   // (In most use cases you won't need these)
@@ -1169,6 +1171,7 @@ class WiFiComponent final : public Component {
 #endif
   bool passive_scan_{false};
   bool has_saved_wifi_settings_{false};
+  bool skip_saved_wifi_settings_once_{false};
 #ifdef USE_WIFI_11KV_SUPPORT
   bool btm_{false};
   bool rrm_{false};

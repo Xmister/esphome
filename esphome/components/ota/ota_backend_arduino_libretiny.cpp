@@ -1,4 +1,4 @@
-#ifdef USE_LIBRETINY
+#if defined(USE_LIBRETINY) && !defined(USE_LIBRETINY_VARIANT_BL60X)
 #include "ota_backend_arduino_libretiny.h"
 #include "ota_backend.h"
 
@@ -127,4 +127,4 @@ void ArduinoLibreTinyOTABackend::abort() {
 }
 
 }  // namespace esphome::ota
-#endif  // USE_LIBRETINY
+#endif  // USE_LIBRETINY && !USE_LIBRETINY_VARIANT_BL60X

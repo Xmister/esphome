@@ -28,6 +28,7 @@ from esphome.const import (
     PLATFORM_ESP8266,
     PLATFORM_HOST,
     PLATFORM_LN882X,
+    PLATFORM_BL60X,
     PLATFORM_NRF52,
     PLATFORM_RP2,
     PLATFORM_RTL87XX,
@@ -921,6 +922,8 @@ class EsphomeCore:
         if self.using_toolchain_esp_idf:
             return self.relative_build_path("build", f"{self.name}.bin")
         if self.is_libretiny:
+            if self.target_platform == PLATFORM_BL60X:
+                return self.relative_pioenvs_path(self.name, "firmware.bin")
             return self.relative_pioenvs_path(self.name, "firmware.uf2")
         if self.is_host:
             # Host builds produce a native ELF/Mach-O named `program`.
@@ -1007,8 +1010,12 @@ class EsphomeCore:
         return self.target_platform == PLATFORM_LN882X
 
     @property
+    def is_bl60x(self):
+        return self.target_platform == PLATFORM_BL60X
+
+    @property
     def is_libretiny(self):
-        return self.is_bk72xx or self.is_rtl87xx or self.is_ln882x
+        return self.is_bk72xx or self.is_rtl87xx or self.is_ln882x or self.is_bl60x
 
     @property
     def is_nrf52(self):

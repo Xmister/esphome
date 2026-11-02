@@ -43,6 +43,7 @@ CONFIG_SCHEMA = (
             cv.SplitDefault(
                 CONF_USE_INTERRUPT,
                 bk72xx=False,
+                bl60x=False,
                 esp32=True,
                 esp8266=True,
                 host=True,
@@ -84,6 +85,13 @@ def _final_validate(config: ConfigType) -> None:
         )
         config[CONF_USE_INTERRUPT] = False
         return
+
+    if CORE.is_bl60x and config[CONF_INTERRUPT_TYPE] == "ANY":
+        raise cv.Invalid(
+            "BL602 does not support reliable both-edge GPIO interrupts; "
+            "set use_interrupt: false or select RISING/FALLING explicitly",
+            [CONF_INTERRUPT_TYPE],
+        )
 
     pin_num = config[CONF_PIN][CONF_NUMBER]
 

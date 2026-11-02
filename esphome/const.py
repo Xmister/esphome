@@ -46,6 +46,7 @@ class Platform(StrEnum):
     """Platform identifiers for ESPHome."""
 
     BK72XX = "bk72xx"
+    BL60X = "bl60x"
     ESP32 = "esp32"
     ESP8266 = "esp8266"
     HOST = "host"
@@ -115,6 +116,7 @@ class PlatformFramework(Enum):
     # alias for backwards compatibility; scheduled for removal in 2027.7.0.
     RP2040_ARDUINO = (Platform.RP2040, Framework.ARDUINO)
     BK72XX_ARDUINO = (Platform.BK72XX, Framework.ARDUINO)
+    BL60X_ARDUINO = (Platform.BL60X, Framework.ARDUINO)
     RTL87XX_ARDUINO = (Platform.RTL87XX, Framework.ARDUINO)
     LN882X_ARDUINO = (Platform.LN882X, Framework.ARDUINO)
 
@@ -127,6 +129,7 @@ class PlatformFramework(Enum):
 
 # Maintain backward compatibility by reassigning after enum definition
 PLATFORM_BK72XX = Platform.BK72XX
+PLATFORM_BL60X = Platform.BL60X
 PLATFORM_ESP32 = Platform.ESP32
 PLATFORM_ESP8266 = Platform.ESP8266
 PLATFORM_HOST = Platform.HOST

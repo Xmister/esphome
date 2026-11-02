@@ -724,6 +724,7 @@ CONFIG_SCHEMA = cv.All(
                 esp32="light",
                 rp2="light",
                 bk72xx="none",
+                bl60x="none",
                 rtl87xx="none",
                 ln882x="none",
             ): cv.enum(WIFI_POWER_SAVE_MODES, upper=True),
@@ -1316,6 +1317,7 @@ FILTER_SOURCE_FILES = filter_source_files_from_platform(
             PlatformFramework.BK72XX_ARDUINO,
             PlatformFramework.RTL87XX_ARDUINO,
             PlatformFramework.LN882X_ARDUINO,
+            PlatformFramework.BL60X_ARDUINO,
         },
         "wifi_component_pico_w.cpp": {PlatformFramework.RP2_ARDUINO},
     }

@@ -21,6 +21,7 @@ from esphome.const import (
     KEY_FRAMEWORK_VERSION,
     KEY_TARGET_FRAMEWORK,
     KEY_TARGET_PLATFORM,
+    PLATFORM_BL60X,
     ThreadModel,
     __version__,
 )
@@ -490,6 +491,16 @@ async def component_to_code(config):
     cg.add_define("USE_PREFERENCE_KEY_LOOKUP")
     cg.add_build_flag(f"-DUSE_{config[CONF_COMPONENT_ID].upper()}")
     cg.add_build_flag(f"-DUSE_LIBRETINY_VARIANT_{config[CONF_FAMILY]}")
+    if config[CONF_FAMILY] == "BL60X":
+        # The verified MINIR3 has a 720 KiB inactive slot. Whole-program
+        # optimization is needed for the ESPHome API, BLE listener, and OTA
+        # backend to fit together in that measured layout.
+        cg.add_build_flag("-flto")
+        # No C++ exceptions are used and this target has no unwinder. Omitting
+        # unwind tables recovers flash needed for the bootinfo and SDK SHA
+        # trailer in the MINIR3's dual-slot OTA image.
+        cg.add_build_flag("-fno-unwind-tables")
+        cg.add_build_flag("-fno-asynchronous-unwind-tables")
     cg.add_define("ESPHOME_BOARD", config[CONF_BOARD])
     cg.add_define("ESPHOME_VARIANT", FAMILY_FRIENDLY[config[CONF_FAMILY]])
     # Set threading model based on chip architecture
@@ -513,6 +524,9 @@ async def component_to_code(config):
 
     # Static destructors never run, so skip registering them. See atexit_stubs.cpp.
     cg.add_build_flag("-Wl,--wrap=__cxa_atexit")
+    # LTO can discard the wrapper translation unit before GNU ld applies
+    # --wrap unless the wrapper symbol is retained explicitly.
+    cg.add_build_flag("-Wl,--undefined=__wrap___cxa_atexit")
 
     # LN882x: a zero-size allocation must not trip the SDK's assert (see ln882x_zero_malloc.c).
     if config[CONF_COMPONENT_ID] == COMPONENT_LN882X:
@@ -668,6 +682,11 @@ def device_ota_image(firmware: Path) -> Path:
     when there is nothing to drop."""
     from .ota_uf2 import device_ota_uf2
 
+    if CORE.target_platform == PLATFORM_BL60X:
+        from esphome.components.bl60x.ota_image import device_ota_image as bl60x_ota_image
+
+        return bl60x_ota_image(firmware)
+
     data = firmware.read_bytes()
     if (trimmed := device_ota_uf2(data)) is None:
         return firmware
@@ -696,5 +715,9 @@ def copy_files() -> None:
     copy_file_if_changed(
         script_dir / "patch_noinit.py.script",
         CORE.relative_build_path("patch_noinit.py"),
+    )
+    copy_file_if_changed(
+        script_dir / "patch_libsodium_utils.py.script",
+        CORE.relative_build_path("patch_libsodium_utils.py"),
     )
     copy_ccache_script()

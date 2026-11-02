@@ -138,6 +138,7 @@ COMPONENT_MAP = {
     "rtl87xx": "realtek-amb",
     "bk72xx": "beken-72xx",
     "ln882x": "lightning-ln882x",
+    "bl60x": "boufallo-bl678",
 }
 
 # Components with Cortex-M4(F) have LDREX/STREX for native atomic support.
@@ -145,6 +146,7 @@ COMPONENT_MAP = {
 COMPONENT_SUPPORTS_ATOMICS = {
     "rtl87xx": True,  # Cortex-M4
     "ln882x": True,  # Cortex-M4F
+    "bl60x": False,  # GCC 10 lacks native byte/halfword RISC-V atomic RMW
     "bk72xx": False,  # ARM968E-S
 }
 

@@ -735,7 +735,9 @@ void WiFiComponent::start() {
 #endif
 
   SavedWifiSettings save{};
-  if (this->pref_.load(&save)) {
+  const bool skip_saved_wifi_settings = this->skip_saved_wifi_settings_once_;
+  this->skip_saved_wifi_settings_once_ = false;
+  if (!skip_saved_wifi_settings && this->pref_.load(&save)) {
     ESP_LOGD(TAG, "Loaded settings: %s", save.ssid);
 
     WiFiAP sta{};

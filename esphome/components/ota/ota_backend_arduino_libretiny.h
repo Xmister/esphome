@@ -1,5 +1,5 @@
 #pragma once
-#ifdef USE_LIBRETINY
+#if defined(USE_LIBRETINY) && !defined(USE_LIBRETINY_VARIANT_BL60X)
 #include "ota_backend.h"
 
 #include "esphome/components/md5/md5.h"
@@ -39,4 +39,4 @@ class ArduinoLibreTinyOTABackend final {
 std::unique_ptr<ArduinoLibreTinyOTABackend> make_ota_backend();
 
 }  // namespace esphome::ota
-#endif  // USE_LIBRETINY
+#endif  // USE_LIBRETINY && !USE_LIBRETINY_VARIANT_BL60X

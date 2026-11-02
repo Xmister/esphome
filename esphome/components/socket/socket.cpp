@@ -28,7 +28,7 @@ namespace esphome::socket {
 #ifdef USE_HOST
 // Host: ready when the wake select() loop has flagged this fd (or it isn't monitored).
 bool socket_ready_fd(int fd, bool loop_monitored) { return !loop_monitored || wake_fd_ready(fd); }
-#elif defined(USE_ZEPHYR)
+#elif defined(USE_ZEPHYR) || defined(USE_BL60X)
 // Zephyr (nRF52): fd monitoring isn't wired into the esphome select loop
 // (wake_register_fd is USE_HOST-only), so loop_monitored is always false. Always
 // return true — the caller handles EAGAIN/EWOULDBLOCK on read.
@@ -54,7 +54,7 @@ static inline const char *esphome_inet_ntop4(const void *addr, char *buf, size_t
 static inline const char *esphome_inet_ntop4(const void *addr, char *buf, size_t size) {
   return lwip_inet_ntop(AF_INET, addr, buf, size);
 }
-#elif defined(USE_ZEPHYR)
+#elif defined(USE_ZEPHYR) || defined(USE_BL60X)
 // Zephyr BSD sockets — use Zephyr native address formatting via POSIX-subset wrappers.
 // <zephyr/net/socket.h> is already included transitively through <sys/socket.h>.
 static inline const char *esphome_inet_ntop4(const void *addr, char *buf, size_t size) {

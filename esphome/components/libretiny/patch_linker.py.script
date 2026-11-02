@@ -53,6 +53,7 @@ _LN_COPY = re.compile(r"(KEEP\(\*\(\.vectors\)\)[^\n]*\n)")
 # tests/test_build_components fails on the PR, surfacing the mismatch loudly
 # rather than silently shipping a binary with IRAM_ATTR code dropped from
 # one or both OTA slots.
+_BL602_DATA = re.compile(r"(\.data\s*:\s*\n?\s*\{\s*\n)")
 _AMBZ_DATA = re.compile(r"(\.ram_image2\.data\s*:\s*\n?\s*\{\s*\n)")
 
 
@@ -76,6 +77,7 @@ def _detect(env):
 
 KNOWN_VARIANTS = frozenset({
     "LN882H",
+    "BL60X",
     "RTL8710B",
     "RTL8720C",
 })
@@ -95,6 +97,7 @@ def _inject_keep(host_section):
 # - BK72xx (all): SDK masks FIQ+IRQ around flash writes, IRAM_ATTR is no-op.
 _PATCHERS_BY_VARIANT = {
     "LN882H": (_inject_keep(_LN_COPY),),
+    "BL60X": (_inject_keep(_BL602_DATA),),
     "RTL8710B": (_inject_keep(_AMBZ_DATA),),
 }
 

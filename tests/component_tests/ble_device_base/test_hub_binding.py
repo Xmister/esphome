@@ -57,7 +57,7 @@ def test_empty_registry_names_every_in_tree_tracker(hub_registry: set[str]) -> N
     _set_platform(None)
     with pytest.raises(
         cv.Invalid,
-        match="add one of: bk72xx_ble_tracker, esp32_ble_tracker, ln882h_ble_tracker, rp2_ble_tracker",
+        match="add one of: bk72xx_ble_tracker, bl602_ble_tracker, esp32_ble_tracker, ln882h_ble_tracker, rp2_ble_tracker",
     ):
         ble_device_base._require_hub(_generated_id())
 

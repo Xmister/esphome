@@ -84,6 +84,7 @@ _IN_TREE_HUB_PROVIDERS: dict[str, str] = {
     "bk72xx": "bk72xx_ble_tracker",
     "rp2": "rp2_ble_tracker",
     "ln882x": "ln882h_ble_tracker",
+    "bl60x": "bl602_ble_tracker",
 }
 
 

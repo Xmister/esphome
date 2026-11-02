@@ -1289,6 +1289,36 @@ class PinUseValidationCheck(ConfigValidationStep):
         pins.PIN_SCHEMA_REGISTRY.final_validate(result)
 
 
+def _route_bl602_ble_tracker(config):
+    """Route ESP32 listener YAML to the neutral BL602 tracker on BL60x only."""
+    old = "esp32_ble_tracker"
+    new = "bl602_ble_tracker"
+    if old not in config:
+        return
+    if new in config:
+        raise cv.Invalid("Use only one BLE tracker configuration on BL60x")
+    config[new] = config.pop(old)
+
+    def rewrite_actions(node):
+        if isinstance(node, dict):
+            for key in list(node):
+                replacement = {
+                    "esp32_ble_tracker.start_scan": "bl602_ble_tracker.start_scan",
+                    "esp32_ble_tracker.stop_scan": "bl602_ble_tracker.stop_scan",
+                }.get(key)
+                if replacement:
+                    if replacement in node:
+                        raise cv.Invalid("Duplicate BLE scan action after BL60x routing")
+                    node[replacement] = node.pop(key)
+                    key = replacement
+                rewrite_actions(node[key])
+        elif isinstance(node, list):
+            for item in node:
+                rewrite_actions(item)
+
+    rewrite_actions(config)
+
+
 def validate_config(
     config: dict[str, Any],
     command_line_substitutions: dict[str, Any] | None,
@@ -1424,6 +1454,13 @@ def validate_config(
         return result
     # Remove temporary esphome config path again, it will be reloaded later
     result.remove_output_path([CONF_ESPHOME], CONF_ESPHOME)
+
+    if target_platform == "bl60x":
+        try:
+            _route_bl602_ble_tracker(config)
+        except vol.Invalid as err:
+            result.add_error(err)
+            return result
 
     # Check version number now to avoid loading components that are not supported
     if min_version := config[CONF_ESPHOME].get(CONF_MIN_VERSION):

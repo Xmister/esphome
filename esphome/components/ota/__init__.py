@@ -105,6 +105,15 @@ async def to_code(config: ConfigType) -> None:
     cg.add_define("USE_OTA")
     CORE.add_job(final_step)
 
+    if CORE.target_platform == "bl60x":
+        from esphome.components.noise import (
+            LIBSODIUM_VERSION,
+            add_bl60x_sodium_build_support,
+        )
+
+        cg.add_library("esphome/libsodium", LIBSODIUM_VERSION)
+        add_bl60x_sodium_build_support()
+
     if CORE.is_rp2 and CORE.using_arduino:
         cg.add_library("Updater", None)
 
@@ -170,6 +179,7 @@ _filter_backend_source_files = filter_source_files_from_platform(
             PlatformFramework.RTL87XX_ARDUINO,
             PlatformFramework.LN882X_ARDUINO,
         },
+        "ota_backend_bl60x.cpp": {PlatformFramework.BL60X_ARDUINO},
         "ota_backend_host.cpp": {PlatformFramework.HOST_NATIVE},
     }
 )
