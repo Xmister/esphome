@@ -154,29 +154,6 @@ ESPBTUUID ESPBTUUID::as_128bit() const {
   return ESPBTUUID::from_raw(data);
 }
 
-#if defined(USE_BL602_BLE) && !defined(USE_ESP32)
-LegacyUUID ESPBTUUID::get_uuid() const {
-  LegacyUUID result{};
-  switch (this->type_) {
-    case Type::UUID16:
-      result.len = 2;
-      result.uuid.uuid16 = this->uuid_.uuid16;
-      break;
-    case Type::UUID32:
-      result.len = 4;
-      result.uuid.uuid32 = this->uuid_.uuid32;
-      break;
-    case Type::UUID128:
-      result.len = 16;
-      memcpy(result.uuid.uuid128, this->uuid_.uuid128, 16);
-      break;
-    case Type::UNSET:
-      break;
-  }
-  return result;
-}
-#endif
-
 bool ESPBTUUID::contains(uint8_t data1, uint8_t data2) const {
   // Adjacent byte-pair search — identical semantics to esp32_ble::ESPBTUUID::contains.
   switch (this->type_) {

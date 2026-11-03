@@ -52,18 +52,6 @@ static constexpr size_t UUID_STR_LEN = 37;
 // conversions live in esp32_ble (esp32-only adapters), not here.
 // ---------------------------------------------------------------------------
 
-#if defined(USE_BL602_BLE) && !defined(USE_ESP32)
-// Compatibility for existing ESP32 listener lambdas that inspect get_uuid().
-struct LegacyUUID {
-  uint16_t len;
-  union {
-    uint16_t uuid16;
-    uint32_t uuid32;
-    uint8_t uuid128[16];
-  } uuid;
-};
-#endif
-
 class ESPBTUUID {
  public:
   ESPBTUUID() = default;
@@ -87,8 +75,6 @@ class ESPBTUUID {
   /// Source compatibility with the historical esp32_ble API (esp32 builds only).
   static ESPBTUUID from_uuid(esp_bt_uuid_t uuid);
   esp_bt_uuid_t get_uuid() const;
-#elif defined(USE_BL602_BLE)
-  LegacyUUID get_uuid() const;
 #endif
 
   /// Expand to the 128-bit Bluetooth Base UUID form.
@@ -304,15 +290,3 @@ class ESPBTDeviceListener {
 };
 
 }  // namespace esphome::ble_device_base
-
-#if defined(USE_BL602_BLE) && !defined(USE_ESP32)
-namespace esphome::esp32_ble {
-using ble_device_base::ESPBTUUID;
-}
-namespace esphome::esp32_ble_tracker {
-using ble_device_base::ESPBTDevice;
-using ble_device_base::ESPBTUUID;
-using ble_device_base::ESPBLEiBeacon;
-using ble_device_base::ServiceData;
-}  // namespace esphome::esp32_ble_tracker
-#endif
