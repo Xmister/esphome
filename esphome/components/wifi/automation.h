@@ -38,7 +38,6 @@ template<typename... Ts> class WiFiConfigureAction final : public Action<Ts...>,
     // Store the new STA so once the WiFi is enabled, it will connect to it
     // This is necessary because the WiFiComponent will raise an error and fallback to the saved STA
     // if trying to connect to a new STA while already connected to another one
-    global_wifi_component->skip_saved_wifi_settings_once();
     if (this->save_.value(x...)) {
       global_wifi_component->save_wifi_sta(new_sta_.get_ssid(), new_sta_.get_password());
     } else {
