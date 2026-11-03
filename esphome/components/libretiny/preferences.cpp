@@ -99,17 +99,7 @@ bool LibreTinyPreferenceBackend::load(uint8_t *data, size_t len) {
 }
 
 void LibreTinyPreferences::open() {
-#ifdef USE_LIBRETINY_VARIANT_BL60X
-  // The verified MINIR3 partition table names its 8 KiB preferences area
-  // "data"; it has no "kvs" partition. Keep the generic LibreTiny name on
-  // other families.
-  constexpr char PREFS_PARTITION[] = "data";
-#else
-  constexpr char PREFS_PARTITION[] = "kvs";
-#endif
-  // FlashDB initializes FAL itself. The verified MINIR3 partition table
-  // names its 8 KiB preferences area "data"; it has no "kvs" partition.
-  fdb_err_t err = fdb_kvdb_init(&this->db, "esphome", PREFS_PARTITION, NULL, NULL);
+  fdb_err_t err = fdb_kvdb_init(&this->db, "esphome", "kvs", NULL, NULL);
   if (err != FDB_NO_ERR) {
     LT_E("fdb_kvdb_init(...) failed: %d", err);
     return;
