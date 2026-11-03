@@ -180,9 +180,6 @@ _filter_backend_source_files = filter_source_files_from_platform(
             PlatformFramework.RTL87XX_ARDUINO,
             PlatformFramework.LN882X_ARDUINO,
         },
-        # Kept as a source file for older BL60X experiments; BL60X now uses
-        # the same Arduino LibreTiny backend as the other SoCs.
-        "ota_backend_bl60x.cpp": set(),
         "ota_backend_host.cpp": {PlatformFramework.HOST_NATIVE},
     }
 )
