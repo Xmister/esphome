@@ -25,7 +25,7 @@ from esphome.const import (
     ThreadModel,
     __version__,
 )
-from esphome.core import CORE, EsphomeError
+from esphome.core import CORE
 from esphome.core.config import BOARD_MAX_LENGTH
 from esphome.helpers import copy_file_if_changed, write_file
 from esphome.platformio.toolchain import copy_ccache_script
@@ -212,26 +212,23 @@ def get_download_types(storage_json: StorageJSON = None):
         PLATFORM_BL60X
     ):
         build_dir = storage_json.firmware_bin_path.parent
-        types = []
-        if (build_dir / "firmware.uf2").is_file():
+        types = [
+            {
+                "title": "UF2 package (recommended)",
+                "description": "For ESPHome OTA or ltchiptool UART flashing",
+                "file": "firmware.uf2",
+                "download": f"{storage_json.name}.uf2",
+            }
+        ]
+        if (build_dir / "firmware.app.bin").is_file():
             types.append(
                 {
-                    "title": "UF2 package (UART and ESPHome OTA)",
-                    "description": (
-                        "For ltchiptool flash write or LibreTiny's network OTA"
-                    ),
-                    "file": "firmware.uf2",
-                    "download": f"{storage_json.name}.uf2",
+                    "title": "Raw application binary",
+                    "description": "For BL60X recovery and board-aware packaging",
+                    "file": "firmware.app.bin",
+                    "download": f"{storage_json.name}.app.bin",
                 }
             )
-        types.append(
-            {
-                "title": "Raw application binary",
-                "description": "For BL60X recovery and board-aware packaging",
-                "file": storage_json.firmware_bin_path.name,
-                "download": f"{storage_json.name}.bin",
-            }
-        )
         return types
     types = [
         {
@@ -718,29 +715,6 @@ def device_ota_image(firmware: Path) -> Path:
     device skips, written next to the build output, or ``firmware`` itself
     when there is nothing to drop."""
     from .ota_uf2 import device_ota_uf2
-
-    if CORE.data.get(KEY_CORE, {}).get(KEY_TARGET_PLATFORM) == PLATFORM_BL60X:
-        # The BL60X builder emits both device and UART-flasher schemes. Feed
-        # ESPHome's normal LibreTiny Update backend only the device UF2 blocks;
-        # lt_ota selects the inactive FW slot on the device.
-        uf2 = firmware.with_name("firmware.uf2")
-        if not uf2.is_file():
-            raise EsphomeError(
-                "BL60X network OTA requires the LibreTiny firmware.uf2 output"
-            )
-        data = uf2.read_bytes()
-        if (trimmed := device_ota_uf2(data)) is None:
-            raise EsphomeError(
-                "BL60X firmware.uf2 has no separable device-only OTA image"
-            )
-        image = CORE.relative_pioenvs_path(CORE.name, "firmware.ota.uf2")
-        write_file(image, trimmed)
-        _LOGGER.info(
-            "Sending BL60X device OTA UF2: %s of %s bytes",
-            len(trimmed),
-            len(data),
-        )
-        return image
 
     data = firmware.read_bytes()
     if (trimmed := device_ota_uf2(data)) is None:
