@@ -54,7 +54,7 @@ static inline const char *esphome_inet_ntop4(const void *addr, char *buf, size_t
 static inline const char *esphome_inet_ntop4(const void *addr, char *buf, size_t size) {
   return lwip_inet_ntop(AF_INET, addr, buf, size);
 }
-#elif defined(USE_ZEPHYR) || defined(USE_BL60X)
+#elif defined(USE_ZEPHYR)
 // Zephyr BSD sockets — use Zephyr native address formatting via POSIX-subset wrappers.
 // <zephyr/net/socket.h> is already included transitively through <sys/socket.h>.
 static inline const char *esphome_inet_ntop4(const void *addr, char *buf, size_t size) {
