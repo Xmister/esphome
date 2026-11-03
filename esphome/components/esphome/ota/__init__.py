@@ -78,12 +78,6 @@ def ota_esphome_final_validate(config: ConfigType) -> None:
     ports_with_merged_configs = []
     for ota_conf in full_ota_conf:
         if ota_conf.get(CONF_PLATFORM) == DOMAIN:
-            if CORE.target_platform == PLATFORM_BL60X:
-                if full_conf.get("bl60x", {}).get("board") != "generic-bl602":
-                    raise cv.Invalid(
-                        f"'{CONF_PLATFORM}: {DOMAIN}' on BL60X is only supported "
-                        "for the `generic-bl602` board profile"
-                    )
             if (
                 conf_port := ota_conf.get(CONF_PORT)
             ) not in merged_ota_esphome_configs_by_port:
