@@ -150,7 +150,7 @@ def _update_core_data(config):
         revision = (
             "bl602-integration"
             if alias == "dev"
-            else "c8e12059b9f97948f33b18c9415d9eb7438cb331"
+            else "d39ffd13"
         )
         framework[CONF_SOURCE] = f"https://github.com/Xmister/libretuya.git#{revision}"
     CORE.data[KEY_CORE][KEY_TARGET_PLATFORM] = config[CONF_COMPONENT_ID]
