@@ -79,16 +79,10 @@ def ota_esphome_final_validate(config: ConfigType) -> None:
     for ota_conf in full_ota_conf:
         if ota_conf.get(CONF_PLATFORM) == DOMAIN:
             if CORE.target_platform == PLATFORM_BL60X:
-                from esphome.components.libretiny import get_libretiny_family
-                from esphome.components.libretiny.const import FAMILY_BL60X
-
-                if (
-                    get_libretiny_family() != FAMILY_BL60X
-                    or full_conf.get("bl60x", {}).get("board") != "sonoff-minir3"
-                ):
+                if full_conf.get("bl60x", {}).get("board") != "generic-bl602":
                     raise cv.Invalid(
                         f"'{CONF_PLATFORM}: {DOMAIN}' on BL60X is only supported "
-                        "for the verified `sonoff-minir3` board profile"
+                        "for the `generic-bl602` board profile"
                     )
             if (
                 conf_port := ota_conf.get(CONF_PORT)
