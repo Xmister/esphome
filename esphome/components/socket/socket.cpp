@@ -28,7 +28,7 @@ namespace esphome::socket {
 #ifdef USE_HOST
 // Host: ready when the wake select() loop has flagged this fd (or it isn't monitored).
 bool socket_ready_fd(int fd, bool loop_monitored) { return !loop_monitored || wake_fd_ready(fd); }
-#elif defined(USE_ZEPHYR) || defined(USE_BL60X)
+#elif defined(USE_ZEPHYR)
 // Zephyr (nRF52): fd monitoring isn't wired into the esphome select loop
 // (wake_register_fd is USE_HOST-only), so loop_monitored is always false. Always
 // return true — the caller handles EAGAIN/EWOULDBLOCK on read.
