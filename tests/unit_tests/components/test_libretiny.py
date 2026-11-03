@@ -96,7 +96,7 @@ def test_each_platform_resolves_its_own_boards() -> None:
         source = config["framework"]["source"]
         assert ("Xmister/libretuya.git" in source) == (platform is bl60x)
         if platform is bl60x:
-            assert source.endswith("#06d27337e4caba386b5d08364cec867f94ce5ebc")
+            assert source.endswith("#67e6661f81920ce9a16e968b86279c80e283b095")
 
 
 def test_bl60x_downloads_standard_uf2(tmp_path: Path) -> None:
