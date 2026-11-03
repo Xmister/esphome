@@ -208,6 +208,19 @@ def get_download_types(storage_json: StorageJSON = None):
     # No recorded firmware path means nothing was built; no downloads.
     if storage_json.firmware_bin_path is None:
         return []
+    if (storage_json.core_platform or storage_json.target_platform.lower()) == (
+        PLATFORM_BL60X
+    ):
+        # BL60X builds currently produce a raw firmware.bin, not the UF2
+        # package or firmware.json outputs used by the other LibreTiny cores.
+        return [
+            {
+                "title": "Raw firmware binary",
+                "description": "For flashing with the BL60X-specific tools",
+                "file": storage_json.firmware_bin_path.name,
+                "download": f"{storage_json.name}.bin",
+            }
+        ]
     types = [
         {
             "title": "UF2 package (recommended)",

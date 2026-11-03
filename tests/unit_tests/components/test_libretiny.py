@@ -1,9 +1,16 @@
 """Tests for LibreTiny board detection, including renamed-board migration."""
 
+from pathlib import Path
+from types import SimpleNamespace
+
 import pytest
 
 from esphome.components import bk72xx, bl60x, ln882x, rtl87xx
-from esphome.components.libretiny import BASE_SCHEMA, _detect_variant
+from esphome.components.libretiny import (
+    BASE_SCHEMA,
+    _detect_variant,
+    get_download_types,
+)
 from esphome.components.libretiny.const import (
     FAMILY_LN882H,
     KEY_COMPONENT_DATA,
@@ -88,3 +95,26 @@ def test_each_platform_resolves_its_own_boards() -> None:
         assert CORE.data[KEY_LIBRETINY][KEY_COMPONENT_DATA] is platform.COMPONENT_DATA
         source = config["framework"]["source"]
         assert ("Xmister/libretuya.git" in source) == (platform is bl60x)
+
+
+def test_bl60x_downloads_raw_binary_not_uf2(tmp_path: Path) -> None:
+    """BL60X exposes its actual raw binary output, not a missing UF2 file."""
+    firmware = tmp_path / "firmware.bin"
+    firmware.touch()
+    storage = SimpleNamespace(
+        firmware_bin_path=firmware,
+        target_platform="BL60X",
+        core_platform="bl60x",
+        name="bl602-node",
+    )
+
+    downloads = get_download_types(storage)
+
+    assert downloads == [
+        {
+            "title": "Raw firmware binary",
+            "description": "For flashing with the BL60X-specific tools",
+            "file": "firmware.bin",
+            "download": "bl602-node.bin",
+        }
+    ]

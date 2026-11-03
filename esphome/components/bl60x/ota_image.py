@@ -27,11 +27,12 @@ def _version_field(value: str, field: str) -> bytes:
 def _raw_application(firmware: bytes) -> bytes:
     """Accept either the SDK's raw linked image or its single-image wrapper.
 
-    LibreTiny's BL602 build output is `img_single.bin`: it already starts with
-    a BFNP boot header and a 4 KiB image header page. The network OTA package
-    needs the linked application bytes only, because it creates a fresh boot
-    info page for the inactive slot. Wrapping the complete SDK image here would
-    put a second BFNP image at the application's entry point and fail to boot.
+    LibreTiny's BL60X build output is raw `firmware.bin` linked application
+    bytes. The function also accepts an SDK BFNP image for compatibility. The
+    network OTA package needs only the application bytes, because it creates a
+    fresh boot info page for the inactive slot. Wrapping an SDK image here
+    would put a second BFNP image at the application's entry point and fail to
+    boot.
     """
     if not firmware.startswith(b"BFNP"):
         return firmware
