@@ -10,8 +10,6 @@
 #include "ota_backend_esp_idf.h"
 #elif defined(USE_RP2)
 #include "ota_backend_arduino_rp2.h"
-#elif defined(USE_LIBRETINY_VARIANT_BL60X)
-#include "ota_backend_bl60x.h"
 #elif defined(USE_LIBRETINY)
 #include "ota_backend_arduino_libretiny.h"
 #elif defined(USE_HOST)
