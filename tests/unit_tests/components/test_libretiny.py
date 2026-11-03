@@ -96,11 +96,11 @@ def test_each_platform_resolves_its_own_boards() -> None:
         source = config["framework"]["source"]
         assert ("Xmister/libretuya.git" in source) == (platform is bl60x)
         if platform is bl60x:
-            assert source.endswith("#a3700b07088a3c6414c8bf538abea8fdd7369a36")
+            assert source.endswith("#febe0bdb9ddd3e58523ced1425f1947f8fd07d94")
 
 
 def test_bl60x_downloads_standard_uf2(tmp_path: Path) -> None:
-    """MINIR3 exposes the same UF2 download type as other LibreTiny boards."""
+    """BL60X exposes the same UF2 download type as other LibreTiny boards."""
     firmware = tmp_path / "firmware.bin"
     firmware.touch()
     (tmp_path / "firmware.uf2").touch()
@@ -121,17 +121,3 @@ def test_bl60x_downloads_standard_uf2(tmp_path: Path) -> None:
             "download": "bl602-node.uf2",
         }
     ]
-
-
-def test_bl60x_without_uf2_has_no_download(tmp_path: Path) -> None:
-    """An application-only BL60X binary must not be offered as flashable."""
-    firmware = tmp_path / "firmware.bin"
-    firmware.touch()
-    storage = SimpleNamespace(
-        firmware_bin_path=firmware,
-        target_platform="BL60X",
-        core_platform="bl60x",
-        name="generic-bl602-node",
-    )
-
-    assert get_download_types(storage) == []

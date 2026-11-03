@@ -149,7 +149,7 @@ def _update_core_data(config):
         revision = (
             "bl602-integration"
             if alias == "dev"
-            else "a3700b07088a3c6414c8bf538abea8fdd7369a36"
+            else "febe0bdb9ddd3e58523ced1425f1947f8fd07d94"
         )
         framework[CONF_SOURCE] = f"https://github.com/Xmister/libretuya.git#{revision}"
     CORE.data[KEY_CORE][KEY_TARGET_PLATFORM] = config[CONF_COMPONENT_ID]
@@ -208,15 +208,6 @@ def get_download_types(storage_json: StorageJSON = None):
     if storage_json.firmware_bin_path is None:
         return []
     build_dir = storage_json.firmware_bin_path.parent
-    # BL60X's raw firmware.bin is application-only and cannot be flashed by
-    # itself. Only MINIR3 currently has a complete UF2 package for both OTA
-    # and ltchiptool UART flashing.
-    if (
-        (storage_json.core_platform or storage_json.target_platform or "").lower()
-        == "bl60x"
-        and not (build_dir / "firmware.uf2").is_file()
-    ):
-        return []
     types = [
         {
             "title": "UF2 package (recommended)",
