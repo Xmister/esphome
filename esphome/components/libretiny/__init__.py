@@ -21,7 +21,6 @@ from esphome.const import (
     KEY_FRAMEWORK_VERSION,
     KEY_TARGET_FRAMEWORK,
     KEY_TARGET_PLATFORM,
-    PLATFORM_BL60X,
     ThreadModel,
     __version__,
 )
@@ -208,28 +207,6 @@ def get_download_types(storage_json: StorageJSON = None):
     # No recorded firmware path means nothing was built; no downloads.
     if storage_json.firmware_bin_path is None:
         return []
-    if (storage_json.core_platform or storage_json.target_platform.lower()) == (
-        PLATFORM_BL60X
-    ):
-        build_dir = storage_json.firmware_bin_path.parent
-        types = [
-            {
-                "title": "UF2 package (recommended)",
-                "description": "For ESPHome OTA or ltchiptool UART flashing",
-                "file": "firmware.uf2",
-                "download": f"{storage_json.name}.uf2",
-            }
-        ]
-        if (build_dir / "firmware.app.bin").is_file():
-            types.append(
-                {
-                    "title": "Raw application binary",
-                    "description": "For BL60X recovery and board-aware packaging",
-                    "file": "firmware.app.bin",
-                    "download": f"{storage_json.name}.app.bin",
-                }
-            )
-        return types
     types = [
         {
             "title": "UF2 package (recommended)",

@@ -97,12 +97,11 @@ def test_each_platform_resolves_its_own_boards() -> None:
         assert ("Xmister/libretuya.git" in source) == (platform is bl60x)
 
 
-def test_bl60x_downloads_uf2_and_recovery_app(tmp_path: Path) -> None:
-    """MINIR3 uses standard UF2 outputs and exposes its raw app for recovery."""
+def test_bl60x_downloads_standard_uf2(tmp_path: Path) -> None:
+    """MINIR3 exposes the same UF2 download type as other LibreTiny boards."""
     firmware = tmp_path / "firmware.bin"
     firmware.touch()
     (tmp_path / "firmware.uf2").touch()
-    (tmp_path / "firmware.app.bin").touch()
     storage = SimpleNamespace(
         firmware_bin_path=firmware,
         target_platform="BL60X",
@@ -115,14 +114,8 @@ def test_bl60x_downloads_uf2_and_recovery_app(tmp_path: Path) -> None:
     assert downloads == [
         {
             "title": "UF2 package (recommended)",
-            "description": "For ESPHome OTA or ltchiptool UART flashing",
+            "description": "For flashing via web_server OTA or with ltchiptool (UART)",
             "file": "firmware.uf2",
             "download": "bl602-node.uf2",
-        },
-        {
-            "title": "Raw application binary",
-            "description": "For BL60X recovery and board-aware packaging",
-            "file": "firmware.app.bin",
-            "download": "bl602-node.app.bin",
-        },
+        }
     ]
