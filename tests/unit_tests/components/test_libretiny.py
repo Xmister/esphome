@@ -95,6 +95,8 @@ def test_each_platform_resolves_its_own_boards() -> None:
         assert CORE.data[KEY_LIBRETINY][KEY_COMPONENT_DATA] is platform.COMPONENT_DATA
         source = config["framework"]["source"]
         assert ("Xmister/libretuya.git" in source) == (platform is bl60x)
+        if platform is bl60x:
+            assert source.endswith("#ced0057f5ec9774f8f66c45ce93a9caf7ca15b44")
 
 
 def test_bl60x_downloads_standard_uf2(tmp_path: Path) -> None:
@@ -119,3 +121,17 @@ def test_bl60x_downloads_standard_uf2(tmp_path: Path) -> None:
             "download": "bl602-node.uf2",
         }
     ]
+
+
+def test_bl60x_without_uf2_has_no_download(tmp_path: Path) -> None:
+    """An application-only BL60X binary must not be offered as flashable."""
+    firmware = tmp_path / "firmware.bin"
+    firmware.touch()
+    storage = SimpleNamespace(
+        firmware_bin_path=firmware,
+        target_platform="BL60X",
+        core_platform="bl60x",
+        name="generic-bl602-node",
+    )
+
+    assert get_download_types(storage) == []
