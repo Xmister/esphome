@@ -8,9 +8,9 @@ BL60X_BOARDS = {
     },
 }
 BL60X_BOARD_PINS = {
-    "generic-bl602": {f"GPIO{i}": i for i in range(17)},
-    # MINIR3 mappings: relay GPIO3 and status LED GPIO20 are documented by
-    # OpenBeken; GPIO7/16 are the confirmed ROM ISP UART pads.
-    "sonoff-minir3": {"GPIO3": 3, "GPIO7": 7, "GPIO16": 16, "GPIO20": 20},
+    "generic-bl602": {f"GPIO{i}": i for i in range(23)},
+    # Expose the BL602 GPIO range for device-specific pin discovery.
+    # On this MINIR3, GPIO1 is the status LED, GPIO5 the button, and GPIO22 the relay.
+    "sonoff-minir3": {f"GPIO{i}": i for i in range(23)},
 }
 BOARDS = BL60X_BOARDS
