@@ -9,6 +9,7 @@ from esphome.const import (
     DEVICE_CLASS_TEMPERATURE,
     ENTITY_CATEGORY_DIAGNOSTIC,
     PLATFORM_BK72XX,
+    PLATFORM_BL60X,
     PLATFORM_ESP32,
     PLATFORM_LN882X,
     PLATFORM_NRF52,
@@ -38,6 +39,7 @@ CONFIG_SCHEMA = cv.All(
         [
             PLATFORM_ESP32,
             PLATFORM_RP2,
+            PLATFORM_BL60X,
             PLATFORM_BK72XX,
             PLATFORM_NRF52,
             PLATFORM_LN882X,
@@ -71,6 +73,9 @@ FILTER_SOURCE_FILES = filter_source_files_from_platform(
         },
         "internal_temperature_ln882x.cpp": {
             PlatformFramework.LN882X_ARDUINO,
+        },
+        "internal_temperature_bl602.cpp": {
+            PlatformFramework.BL60X_ARDUINO,
         },
         "internal_temperature_zephyr.cpp": {PlatformFramework.NRF52_ZEPHYR},
     }
