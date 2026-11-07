@@ -76,6 +76,8 @@ __attribute__((always_inline)) inline bool in_isr_context() {
 #if defined(USE_BK72XX)
   // BK72xx is ARM968E-S (ARM9); see extern declaration above.
   return platform_is_in_interrupt_context() != 0;
+#elif defined(USE_BL60X)
+  return xPortIsInsideInterrupt() != 0;
 #else
   // Cortex-M (AmebaZ, AmebaZ2, LN882H). IPSR is the active exception number;
   // non-zero means we're in a handler.

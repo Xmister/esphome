@@ -57,7 +57,7 @@ def test_empty_registry_names_every_in_tree_tracker(hub_registry: set[str]) -> N
     _set_platform(None)
     with pytest.raises(
         cv.Invalid,
-        match="add one of: bk72xx_ble_tracker, esp32_ble_tracker, ln882h_ble_tracker, rp2_ble_tracker",
+        match="add one of: bk72xx_ble_tracker, bl602_ble_tracker, esp32_ble_tracker, ln882h_ble_tracker, rp2_ble_tracker",
     ):
         ble_device_base._require_hub(_generated_id())
 
@@ -210,6 +210,7 @@ def test_add_service_uuid_dispatches_by_width(monkeypatch: pytest.MonkeyPatch) -
         ("esp32_tracker_only.yaml", "USE_ESP32_BLE_TRACKER"),
         ("rp2_tracker.yaml", "USE_RP2_BLE_TRACKER"),
         ("bk72xx_tracker.yaml", "USE_BK72XX_BLE_TRACKER"),
+        ("bl602_tracker.yaml", "USE_BL602_BLE_TRACKER"),
         ("ln882h_tracker.yaml", "USE_LN882H_BLE_TRACKER"),
     ],
 )

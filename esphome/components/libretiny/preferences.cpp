@@ -99,7 +99,6 @@ bool LibreTinyPreferenceBackend::load(uint8_t *data, size_t len) {
 }
 
 void LibreTinyPreferences::open() {
-  //
   fdb_err_t err = fdb_kvdb_init(&this->db, "esphome", "kvs", NULL, NULL);
   if (err != FDB_NO_ERR) {
     LT_E("fdb_kvdb_init(...) failed: %d", err);

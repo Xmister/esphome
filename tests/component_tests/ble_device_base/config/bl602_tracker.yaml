@@ -1,0 +1,7 @@
+esphome:
+  name: slotcount-bl602-tracker
+
+bl60x:
+  board: generic-bl602
+
+bl602_ble_tracker:

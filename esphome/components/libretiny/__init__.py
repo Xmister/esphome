@@ -141,6 +141,17 @@ def _detect_variant(value):
 
 
 def _update_core_data(config):
+    framework = config[CONF_FRAMEWORK]
+    alias = framework.pop("_version_alias", None)
+    if config[CONF_COMPONENT_ID] == "bl60x" and alias is not None:
+        # Resolve after board detection so validation does not depend on the
+        # platform left in CORE by a previously validated configuration.
+        revision = (
+            "bl602-integration"
+            if alias == "dev"
+            else "f8943c2ee5791e70d79f0fbbe546cb3c59583a65"
+        )
+        framework[CONF_SOURCE] = f"https://github.com/Xmister/libretuya.git#{revision}"
     CORE.data[KEY_CORE][KEY_TARGET_PLATFORM] = config[CONF_COMPONENT_ID]
     CORE.data[KEY_CORE][KEY_TARGET_FRAMEWORK] = "arduino"
     CORE.data[KEY_CORE][KEY_FRAMEWORK_VERSION] = cv.Version.parse(
@@ -196,6 +207,7 @@ def get_download_types(storage_json: StorageJSON = None):
     # No recorded firmware path means nothing was built; no downloads.
     if storage_json.firmware_bin_path is None:
         return []
+    build_dir = storage_json.firmware_bin_path.parent
     types = [
         {
             "title": "UF2 package (recommended)",
@@ -205,7 +217,6 @@ def get_download_types(storage_json: StorageJSON = None):
         },
     ]
 
-    build_dir = storage_json.firmware_bin_path.parent
     outputs = build_dir / "firmware.json"
     if not outputs.is_file():
         return types
@@ -263,6 +274,7 @@ def _check_framework_version(value):
             )
 
         version, source = ARDUINO_VERSIONS[value[CONF_VERSION]]
+        value["_version_alias"] = value[CONF_VERSION]
     else:
         version = cv.Version.parse(cv.version_number(value[CONF_VERSION]))
         source = value.get(CONF_SOURCE, None)
@@ -490,6 +502,16 @@ async def component_to_code(config):
     cg.add_define("USE_PREFERENCE_KEY_LOOKUP")
     cg.add_build_flag(f"-DUSE_{config[CONF_COMPONENT_ID].upper()}")
     cg.add_build_flag(f"-DUSE_LIBRETINY_VARIANT_{config[CONF_FAMILY]}")
+    if config[CONF_FAMILY] == "BL60X":
+        # The verified MINIR3 has a 720 KiB inactive slot. Whole-program
+        # optimization is needed for the ESPHome API, BLE listener, and OTA
+        # backend to fit together in that measured layout.
+        cg.add_build_flag("-flto")
+        # No C++ exceptions are used and this target has no unwinder. Omitting
+        # unwind tables recovers flash needed for the bootinfo and SDK SHA
+        # trailer in the MINIR3's dual-slot OTA image.
+        cg.add_build_flag("-fno-unwind-tables")
+        cg.add_build_flag("-fno-asynchronous-unwind-tables")
     cg.add_define("ESPHOME_BOARD", config[CONF_BOARD])
     cg.add_define("ESPHOME_VARIANT", FAMILY_FRIENDLY[config[CONF_FAMILY]])
     # Set threading model based on chip architecture
@@ -513,6 +535,9 @@ async def component_to_code(config):
 
     # Static destructors never run, so skip registering them. See atexit_stubs.cpp.
     cg.add_build_flag("-Wl,--wrap=__cxa_atexit")
+    # LTO can discard the wrapper translation unit before GNU ld applies
+    # --wrap unless the wrapper symbol is retained explicitly.
+    cg.add_build_flag("-Wl,--undefined=__wrap___cxa_atexit")
 
     # LN882x: a zero-size allocation must not trip the SDK's assert (see ln882x_zero_malloc.c).
     if config[CONF_COMPONENT_ID] == COMPONENT_LN882X:
@@ -696,5 +721,9 @@ def copy_files() -> None:
     copy_file_if_changed(
         script_dir / "patch_noinit.py.script",
         CORE.relative_build_path("patch_noinit.py"),
+    )
+    copy_file_if_changed(
+        script_dir / "patch_libsodium_utils.py.script",
+        CORE.relative_build_path("patch_libsodium_utils.py"),
     )
     copy_ccache_script()

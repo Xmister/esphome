@@ -9,7 +9,10 @@
 #include "ble_hub.h"
 #include "esphome/core/defines.h"
 
-#if defined(USE_ESP32_BLE_TRACKER)
+#if defined(USE_BL602_BLE_TRACKER)
+#include "esphome/components/bl602_ble_tracker/bl602_ble_tracker.h"
+#define ESPHOME_BLE_HUB_TYPE bl602_ble_tracker::BL602BLETracker
+#elif defined(USE_ESP32_BLE_TRACKER)
 #include "esphome/components/esp32_ble_tracker/esp32_ble_tracker.h"
 #define ESPHOME_BLE_HUB_TYPE esp32_ble_tracker::ESP32BLETracker
 #elif defined(USE_RP2_BLE_TRACKER)

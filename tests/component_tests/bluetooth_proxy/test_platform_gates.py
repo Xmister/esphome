@@ -16,6 +16,7 @@ from esphome.const import (
     KEY_TARGET_FRAMEWORK,
     KEY_TARGET_PLATFORM,
     PLATFORM_BK72XX,
+    PLATFORM_BL60X,
     PLATFORM_ESP32,
     PLATFORM_LN882X,
     PLATFORM_RP2,
@@ -28,11 +29,13 @@ from ..types import SetCoreConfigCallable
 # Advertisement-only hub platforms; rp2 runs the full proxy and has its own
 # tests below.
 HUB_PLATFORM_FRAMEWORKS = [
+    PlatformFramework.BL60X_ARDUINO,
     PlatformFramework.BK72XX_ARDUINO,
     PlatformFramework.LN882X_ARDUINO,
 ]
 
 HUB_TRACKERS = {
+    PLATFORM_BL60X: "bl602_ble_tracker",
     PLATFORM_BK72XX: "bk72xx_ble_tracker",
     PLATFORM_LN882X: "ln882h_ble_tracker",
     PLATFORM_RP2: "rp2_ble_tracker",

@@ -2004,6 +2004,8 @@ bool APIConnection::send_device_info_response_() {
 #define ESPHOME_MANUFACTURER "Beken"
 #elif defined(USE_LN882X)
 #define ESPHOME_MANUFACTURER "Lightning"
+#elif defined(USE_BL60X)
+#define ESPHOME_MANUFACTURER "Bouffalo Lab"
 #elif defined(USE_NRF52)
 #define ESPHOME_MANUFACTURER "Nordic Semiconductor"
 #elif defined(USE_RTL87XX)

@@ -81,7 +81,7 @@ inline struct lwip_sock *hook_fd_for_fast_select(int fd) {
   }
   return sock;
 }
-#elif defined(USE_HOST) || defined(USE_ZEPHYR)
+#elif defined(USE_HOST) || defined(USE_ZEPHYR) || defined(USE_BL60X)
 /// Shared ready() helper for fd-based socket implementations.
 /// Checks if the Application's select() loop has marked this fd as ready.
 bool socket_ready_fd(int fd, bool loop_monitored);

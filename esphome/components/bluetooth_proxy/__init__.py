@@ -8,6 +8,7 @@ from esphome.const import (
     CONF_ACTIVE,
     CONF_ID,
     PLATFORM_BK72XX,
+    PLATFORM_BL60X,
     PLATFORM_ESP32,
     PLATFORM_LN882X,
     PLATFORM_RP2,
@@ -54,7 +55,12 @@ def AUTO_LOAD(config: ConfigType | None = None) -> list[str]:
 # Coupled to bluetooth_connection: platforms with a GATT backend are also
 # listed in its _PLATFORM_BACKENDS registry, HUB_MAX_CONNECTIONS, and
 # FILTER_SOURCE_FILES hub entry.
-_HUB_PLATFORMS = (PLATFORM_BK72XX, PLATFORM_LN882X, PLATFORM_RP2)
+_HUB_PLATFORMS = (
+    PLATFORM_BL60X,
+    PLATFORM_BK72XX,
+    PLATFORM_LN882X,
+    PLATFORM_RP2,
+)
 
 DEPENDENCIES = ["api"]
 CODEOWNERS = ["@jesserockz", "@bdraco"]

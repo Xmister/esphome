@@ -260,7 +260,12 @@ bool WiFiComponent::wifi_sta_connect_(const WiFiAP &ap) {
                         ap.get_channel(),  // 0 = auto
                         ap.has_bssid() ? ap.get_bssid().data() : NULL);
   }
+#ifdef USE_BL60X
+  // The BL602 driver starts asynchronously; idle means the request was accepted.
+  if (status != WL_CONNECTED && status != WL_IDLE_STATUS) {
+#else
   if (status != WL_CONNECTED) {
+#endif
     ESP_LOGW(TAG, "WiFi.begin failed: %d", status);
     // Without this reset the state machine stays at CONNECTING and each retry
     // stalls for the full connect timeout (46 s).

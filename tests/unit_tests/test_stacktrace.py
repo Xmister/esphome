@@ -16,6 +16,7 @@ import pytest
 from esphome import stacktrace
 from esphome.const import (
     PLATFORM_BK72XX,
+    PLATFORM_BL60X,
     PLATFORM_ESP32,
     PLATFORM_ESP8266,
     PLATFORM_HOST,
@@ -67,6 +68,10 @@ CRASH_SAMPLES: dict[str, dict[str, list[str]]] = {
     PLATFORM_BK72XX: {
         "state_markers": ["CRASH DETECTED ON PREVIOUS BOOT"],
         "addresses": ["PC:  0x0001614A  (fault location)"],
+    },
+    PLATFORM_BL60X: {
+        "state_markers": ["CRASH DETECTED ON PREVIOUS BOOT"],
+        "addresses": ["PC:  0x00012134 (fault location)"],
     },
     PLATFORM_RTL87XX: {
         "state_markers": ["CRASH DETECTED ON PREVIOUS BOOT"],
@@ -241,6 +246,7 @@ DECODER_PATTERNS: dict[str, list[str]] = {
     ],
     PLATFORM_RP2: ["CRASH_HANDLER_RE", "CRASH_HANDLER_ADDR_RE"],
     PLATFORM_BK72XX: ["CRASH_HANDLER_RE", "CRASH_HANDLER_ADDR_RE"],
+    PLATFORM_BL60X: ["CRASH_HANDLER_RE", "CRASH_HANDLER_ADDR_RE"],
     PLATFORM_RTL87XX: ["CRASH_HANDLER_RE", "CRASH_HANDLER_ADDR_RE"],
     PLATFORM_LN882X: ["CRASH_HANDLER_RE", "CRASH_HANDLER_ADDR_RE"],
     PLATFORM_NRF52: ["STACKTRACE_NRF52_PC_LR_RE"],

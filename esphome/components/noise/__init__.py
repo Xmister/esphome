@@ -119,6 +119,12 @@ def enable_spare_ephemeral() -> None:
     cg.add_define("USE_NOISE_SPARE_EPHEMERAL")
 
 
+def add_bl60x_sodium_build_support() -> None:
+    script = "pre:patch_libsodium_utils.py"
+    if script not in CORE.platformio_options.get("extra_scripts", []):
+        cg.add_platformio_option("extra_scripts", [script])
+
+
 async def to_code(config: ConfigType) -> None:
     cg.add_define("USE_NOISE")
     # libsodium is declared next to noise-c so the library manager sees both up front
@@ -134,3 +140,5 @@ async def to_code(config: ConfigType) -> None:
     # Enable optimized memzero/memcmp in libsodium instead of volatile byte loops
     cg.add_build_flag("-DHAVE_WEAK_SYMBOLS=1")
     cg.add_build_flag("-DHAVE_INLINE_ASM=1")
+    if CORE.target_platform == "bl60x":
+        add_bl60x_sodium_build_support()

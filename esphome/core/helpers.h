@@ -2220,7 +2220,7 @@ class InterruptLock {
   ~InterruptLock();
 
  protected:
-#if defined(USE_ESP8266) || defined(USE_RP2) || defined(USE_ZEPHYR)
+#if defined(USE_ESP8266) || defined(USE_RP2) || defined(USE_ZEPHYR) || defined(USE_LIBRETINY_VARIANT_BL60X)
   uint32_t state_;
 #endif
 };

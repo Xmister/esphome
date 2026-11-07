@@ -1,0 +1,26 @@
+"""Resolve generic-header collisions in the pinned BL602 SDK/libsodium build."""
+
+from pathlib import Path
+
+Import("env")
+
+libdeps = Path(env.subst("$PROJECT_LIBDEPS_DIR")) / env.subst("$PIOENV") / "libsodium"
+source_root = libdeps / "libsodium" / "src" / "libsodium"
+symbols = (
+    "sodium_memzero(",
+    "sodium_is_zero(",
+    "sodium_base64_ENCODED_LEN(",
+    "SODIUM_C99(",
+    "_sodium_alloc_init(",
+)
+if source_root.is_dir():
+    for source in (*source_root.rglob("*.c"), *source_root.rglob("*.h")):
+        if source == source_root / "include" / "sodium" / "utils.h":
+            continue
+        content = source.read_text(encoding="utf-8")
+        if (
+            (source.suffix != ".c" and not any(symbol in content for symbol in symbols))
+            or "<sodium/utils.h>" in content
+        ):
+            continue
+        source.write_text('#include <sodium/utils.h>\n' + content, encoding="utf-8")

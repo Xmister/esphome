@@ -189,7 +189,7 @@ void ESPHomeOTAComponent::loop() {
   // Self-disable idle loop where a wake path re-enables on listener readiness
   // (fast-select, raw-TCP accept_fn_). Host BSD select doesn't, so stay enabled.
   if (this->client_ == nullptr && !this->server_->ready()) {
-#ifndef USE_HOST
+#if !defined(USE_HOST) && !defined(USE_BL60X)
     this->disable_loop();
 #endif
     return;

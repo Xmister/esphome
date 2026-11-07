@@ -24,6 +24,7 @@ from typing import Any, Final
 
 from esphome.const import (
     PLATFORM_BK72XX,
+    PLATFORM_BL60X,
     PLATFORM_ESP32,
     PLATFORM_ESP8266,
     PLATFORM_LN882X,
@@ -70,6 +71,7 @@ STACKTRACE_GATES: Final[dict[str, str]] = {
     ),
     PLATFORM_RP2: _CRASH_HANDLER_GATE,
     PLATFORM_BK72XX: _CRASH_HANDLER_GATE,
+    PLATFORM_BL60X: _CRASH_HANDLER_GATE,
     PLATFORM_LN882X: _CRASH_HANDLER_GATE,
     PLATFORM_RTL87XX: _CRASH_HANDLER_GATE,
     PLATFORM_NRF52: r"0x[0-9a-fA-F]{3,}\b|Last crash:",
@@ -82,7 +84,9 @@ PLATFORM_HOOKS: Final[dict[str, frozenset[str]]] = {
     "has_network_ota": frozenset({PLATFORM_NRF52}),
     "process_stacktrace": frozenset(STACKTRACE_GATES),
     # The file an app update sends, when it is not the build output itself
-    "ota_image": frozenset({PLATFORM_BK72XX, PLATFORM_LN882X, PLATFORM_RTL87XX}),
+    "ota_image": frozenset(
+        {PLATFORM_BK72XX, PLATFORM_BL60X, PLATFORM_LN882X, PLATFORM_RTL87XX}
+    ),
 }
 
 
