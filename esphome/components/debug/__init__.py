@@ -88,6 +88,7 @@ FILTER_SOURCE_FILES = filter_source_files_from_platform(
         "debug_rp2.cpp": {PlatformFramework.RP2_ARDUINO},
         "debug_libretiny.cpp": {
             PlatformFramework.BK72XX_ARDUINO,
+            PlatformFramework.BL60X_ARDUINO,
             PlatformFramework.RTL87XX_ARDUINO,
             PlatformFramework.LN882X_ARDUINO,
         },
